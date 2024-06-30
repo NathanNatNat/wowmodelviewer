@@ -9,7 +9,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # add wmv source files compilation
 set(src  AnimationExportChoiceDialog.cpp
          animcontrol.cpp
-         AnimExporter.cpp
          app.cpp
          AVIGenerator.cpp
          charcontrol.cpp
@@ -20,7 +19,6 @@ set(src  AnimationExportChoiceDialog.cpp
          ExportSettings.cpp
          filecontrol.cpp
          GeneralSettings.cpp
-         imagecontrol.cpp
          ItemImporterDialog.cpp
          itemselection.cpp
          lightcontrol.cpp
@@ -42,7 +40,6 @@ set(src  AnimationExportChoiceDialog.cpp
 
 set(headers AnimationExportChoiceDialog.h
             animcontrol.h
-            AnimExporter.h
             app.h
             AVIGenerator.h
             charcontrol.h
@@ -54,7 +51,6 @@ set(headers AnimationExportChoiceDialog.h
             ExportSettings.h
             filecontrol.h
             GeneralSettings.h
-            imagecontrol.h
             ItemImporterDialog.h
             itemselection.h
             lightcontrol.h
@@ -80,7 +76,6 @@ source_group("Header Files" FILES ${headers})
 use_glew()
 use_core()
 use_wow()
-use_cximage()
 use_casclib()
 
 set(RES_FILES "wmv.rc")

@@ -31,9 +31,6 @@ if(DEFINED BUILDNUMBER)
   add_definitions(-D_BUILDNUMBER=${BUILDNUMBER})
 endif()
 
-# add external libraries compilation
-add_subdirectory(ThirdParty/CxImage)
-
 # CascLib
 option(CASC_UNICODE ON)
 set(CASC_BUILD_STATIC_LIB ON CACHE BOOL "Force Static library building")

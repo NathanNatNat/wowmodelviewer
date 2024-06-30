@@ -21,11 +21,6 @@ macro(use_glew)
   list(APPEND extralibs opengl32 ${CMAKE_SOURCE_DIR}/ThirdParty/libs/glew32s.lib)
 endmacro()
 
-macro(use_cximage)
-  include_directories(${CMAKE_SOURCE_DIR}/ThirdParty/CxImage)
-  list(APPEND extralibs cximage)
-endmacro()
-
 macro(use_wow)
   use_core() # if you use wow lib, you are underneath using core lib
   use_casclib() # if you use wow lib, you are underneath using casc lib 

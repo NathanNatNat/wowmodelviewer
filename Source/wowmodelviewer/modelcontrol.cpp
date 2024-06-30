@@ -1,7 +1,5 @@
 #include "modelcontrol.h"
 
-#include "ximage.h"
-
 #include <wx/wx.h>
 #include <wx/statline.h>
 #include <wx/ffile.h>

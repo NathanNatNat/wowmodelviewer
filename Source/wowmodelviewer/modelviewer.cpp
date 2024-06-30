@@ -58,10 +58,6 @@ EVT_MENU(ID_LOAD_WOW, ModelViewer::OnGameToggle)
 EVT_MENU(ID_FILE_VIEWLOG, ModelViewer::OnViewLog)
 EVT_MENU(ID_VIEW_NPC, ModelViewer::OnCharToggle)
 EVT_MENU(ID_VIEW_ITEM, ModelViewer::OnCharToggle)
-EVT_MENU(ID_FILE_SCREENSHOT, ModelViewer::OnSave)
-EVT_MENU(ID_FILE_SCREENSHOTCONFIG, ModelViewer::OnSave)
-EVT_MENU(ID_FILE_EXPORTGIF, ModelViewer::OnSave)
-EVT_MENU(ID_FILE_EXPORTAVI, ModelViewer::OnSave)
 // --
 EVT_MENU(ID_FILE_MODEL_INFO, ModelViewer::OnExportOther)
 //--
@@ -203,10 +199,8 @@ ModelViewer::ModelViewer()
   enchants = NULL;
   lightControl = NULL;
   modelControl = NULL;
-  imageControl = NULL;
   settingsControl = NULL;
   modelbankControl = NULL;
-  animExporter = NULL;
   fileControl = NULL;
 
   //wxWidget objects
@@ -307,15 +301,6 @@ void ModelViewer::InitMenu()
   if (isWoWLoaded == true)
     fileMenu->Enable(ID_LOAD_WOW, false);
   fileMenu->Append(ID_FILE_VIEWLOG, _("View Log"));
-  fileMenu->AppendSeparator();
-  fileMenu->Append(ID_FILE_SCREENSHOT, _("Save Screenshot\tF12"));
-  fileMenu->Append(ID_FILE_SCREENSHOTCONFIG, _("Save Sized Screenshot\tCTRL+S"));
-
-  // deactivate sized screenshot (needs a backbuffer rendering)
-  //fileMenu->Enable(ID_FILE_SCREENSHOTCONFIG,false);
-
-  fileMenu->Append(ID_FILE_EXPORTGIF, _("GIF/Sequence Export"));
-  fileMenu->Append(ID_FILE_EXPORTAVI, _("Export AVI"));
   fileMenu->AppendSeparator();
 
   // --== Continue regular menu ==--
@@ -538,7 +523,6 @@ void ModelViewer::InitMenu()
   entries[keys++].Set(wxACCEL_NORMAL, WXK_F8, ID_LOAD_CHAR);
   entries[keys++].Set(wxACCEL_CTRL, (int)'b', ID_SHOW_BOUNDS);
   entries[keys++].Set(wxACCEL_CTRL, (int)'X', ID_FILE_EXIT);
-  entries[keys++].Set(wxACCEL_NORMAL, WXK_F12, ID_FILE_SCREENSHOT);
   entries[keys++].Set(wxACCEL_CTRL, (int)'e', ID_SHOW_EARS);
   entries[keys++].Set(wxACCEL_CTRL, (int)'h', ID_SHOW_HAIR);
   entries[keys++].Set(wxACCEL_CTRL, (int)'f', ID_SHOW_FACIALHAIR);
@@ -546,7 +530,6 @@ void ModelViewer::InitMenu()
   entries[keys++].Set(wxACCEL_CTRL, (int)'l', ID_BACKGROUND);
   entries[keys++].Set(wxACCEL_CTRL, (int)'+', ID_ZOOM_IN);
   entries[keys++].Set(wxACCEL_CTRL, (int)'-', ID_ZOOM_OUT);
-  entries[keys++].Set(wxACCEL_CTRL, (int)'s', ID_FILE_SCREENSHOTCONFIG);
   entries[keys++].Set(wxACCEL_NORMAL, WXK_F9, ID_CLEAR_EQUIPMENT);
   entries[keys++].Set(wxACCEL_NORMAL, WXK_F10, ID_CHAR_RANDOMISE);
   entries[keys++].Set(wxACCEL_NORMAL, WXK_F11, ID_OPENGL_DEBUG);
@@ -597,8 +580,6 @@ void ModelViewer::InitObjects()
   modelControl->animControl = animControl;
 
   enchants = new EnchantsDialog(this, charControl);
-
-  animExporter = new CAnimationExporter(this, wxID_ANY, wxT("Animation Exporter"), wxDefaultPosition, wxSize(350, 220), wxCAPTION | wxSTAY_ON_TOP | wxFRAME_NO_TASKBAR);
 }
 
 void ModelViewer::InitDatabase()
@@ -1287,11 +1268,6 @@ ModelViewer::~ModelViewer()
   // Save our session and layout info
   SaveSession();
 
-  if (animExporter) {
-    animExporter->Destroy();
-    wxDELETE(animExporter);
-  }
-
   if (canvas) {
     canvas->Disable();
     canvas->Destroy();
@@ -1893,85 +1869,6 @@ void ModelViewer::OnMount(wxCommandEvent &event)
   */
 
   charControl->selectMount();
-}
-
-void ModelViewer::OnSave(wxCommandEvent &event)
-{
-  static wxFileName dir = cfgPath;
-
-  if (!canvas || (!canvas->model() && !canvas->wmo))
-    return;
-
-  if (event.GetId() == ID_FILE_SCREENSHOT) {
-    wxString tmp = wxT("screenshot_");
-    tmp << ssCounter;
-    wxFileDialog dialog(this, wxT("Save screenshot"), dir.GetPath(wxPATH_GET_VOLUME), tmp, wxT("Bitmap Images (*.bmp)|*.bmp|TGA Images (*.tga)|*.tga|JPEG Images (*.jpg)|*.jpg|PNG Images (*.png)|*.png"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-    dialog.SetFilterIndex(imgFormat);
-
-    if (dialog.ShowModal() == wxID_OK) {
-      imgFormat = dialog.GetFilterIndex();
-      tmp = dialog.GetPath();
-      dialog.Show(false);
-      canvas->Screenshot(tmp);
-      dir.SetPath(tmp);
-      ssCounter++;
-    }
-
-    //canvas->InitView();
-
-  }
-  else if (event.GetId() == ID_FILE_EXPORTGIF) {
-    if (canvas->wmo)
-      return;
-
-    if (!canvas->model())
-      return;
-
-    if (!video.supportFBO && !video.supportPBO) {
-      wxMessageBox(wxT("This function is currently disabled for video cards that don't\nsupport the FrameBufferObject or PixelBufferObject OpenGL extensions"), wxT("Error"));
-      return;
-    }
-
-    wxFileDialog dialog(this, wxT("Save Animation"), dir.GetPath(wxPATH_GET_VOLUME), wxT("filename"), wxT("Animation"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
-
-    if (dialog.ShowModal() == wxID_OK) {
-      // Save the folder location for next time
-      dir.SetPath(dialog.GetPath());
-
-      // Show our exporter window      
-      animExporter->Init(dialog.GetPath());
-      animExporter->Show(true);
-    }
-
-  }
-  else if (event.GetId() == ID_FILE_EXPORTAVI) {
-    if (canvas->wmo && !canvas->model())
-      return;
-
-    if (!video.supportFBO && !video.supportPBO) {
-      wxMessageBox(wxT("This function is currently disabled for video cards that don't\nsupport the FrameBufferObject or PixelBufferObject OpenGL extensions"), wxT("Error"));
-      return;
-    }
-
-    wxFileDialog dialog(this, wxT("Save AVI"), dir.GetPath(wxPATH_GET_VOLUME), wxT("animation.avi"), wxT("animation (*.avi)|*.avi"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
-
-    if (dialog.ShowModal() == wxID_OK) {
-      animExporter->CreateAvi(dialog.GetPath());
-    }
-
-  }
-  else if (event.GetId() == ID_FILE_SCREENSHOTCONFIG) {
-    if (!imageControl) {
-      imageControl = new ImageControl(this, ID_IMAGE_FRAME, canvas);
-
-      interfaceManager.AddPane(imageControl, wxAuiPaneInfo().
-                               Name(wxT("Screenshot")).Caption(wxT("Screenshot")).
-                               FloatingSize(wxSize(295, 145)).Float().Fixed().
-                               Dockable(false)); //.FloatingPosition(GetStartPosition())
-    }
-
-    imageControl->OnShow(&interfaceManager);
-  }
 }
 
 void ModelViewer::OnBackground(wxCommandEvent &event)

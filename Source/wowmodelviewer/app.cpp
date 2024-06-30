@@ -242,23 +242,6 @@ bool WowModelViewApp::OnInit()
         frame->LoadModel(GAMEDIRECTORY.getFile(fn));
       }
     }
-    else if (cmd == "-mo") {
-      if (i + 1 < argc) {                                                       
-        i++;
-        QString fn = QString::fromWCharArray(argv[i]);
-
-        if (!fn.endsWith("2")) // Its not an M2 file, exit
-          break;
-
-        // If its a character model, give it some skin.
-        // Load the model
-        frame->LoadModel(GAMEDIRECTORY.getFile(fn));
-
-        // Output the screenshot
-        fn = "ss_" + fn.replace('\\', '_') + ".png";
-        frame->canvas->Screenshot(fn.toStdWString());
-      }
-    }
     else if (cmd == "-dbfromfile") {
       LOG_INFO << "Read database from file";
       core::Game::instance().init(new wow::WoWFolder(QString::fromWCharArray(gamePath.c_str())), new wow::WoWDatabase());

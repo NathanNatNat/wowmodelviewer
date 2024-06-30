@@ -23,49 +23,12 @@
  *  Created on: 17 feb. 2015
  *   Copyright: 2015 , WoW Model Viewer (http://wowmodelviewer.net)
  */
-
-#define _EXPORTERPLUGIN_CPP_
 #include "ExporterPlugin.h"
-#undef _EXPORTERPLUGIN_CPP_
 
-
-// Includes / class Declarations
-//--------------------------------------------------------------------
-// STL
 #include <string>
 
-// Qt 
 #include <QtGui/QImage>
 
-// Externals
-#include "ximage.h"
-
-// Other libraries
-
-// Current library
-
-
-// Namespaces used
-//--------------------------------------------------------------------
-
-
-// Beginning of implementation
-//====================================================================
-
-// Constructors 
-//--------------------------------------------------------------------
-
-
-// Destructor
-//--------------------------------------------------------------------
-
-
-// Public methods
-//--------------------------------------------------------------------
-
-
-// Protected methods
-//--------------------------------------------------------------------
 void ExporterPlugin::exportGLTexture(GLuint id, std::wstring filename) const
 {
   LOG_INFO << "Exporting GL texture with id " << id << "in" << filename.c_str();
@@ -81,21 +44,9 @@ void ExporterPlugin::exportGLTexture(GLuint id, std::wstring filename) const
 
   glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, pixels);
 
-  // unfortunatelly, QImage cannot handle tga for writing, use CxImage for now
-  if(filename.find(L".tga") != std::wstring::npos)
-  {
-    CxImage *newImage = new CxImage(0);
-    newImage->CreateFromArray(pixels, width, height, 32, (width*4), true);
-    newImage->Save(filename.c_str(), CXIMAGE_FORMAT_TGA);
-  }
-  else
-  {
-    QImage texture(pixels, width, height, QImage::Format_ARGB32);
-    texture.save(QString::fromStdWString(filename));
-  }
+  QImage texture(pixels, width, height, QImage::Format_ARGB32);
+  texture.save(QString::fromStdWString(filename));
+
   glBindTexture(GL_TEXTURE_2D, 0);
   glDisable(GL_TEXTURE_2D);
 }
-
-// Private methods
-//--------------------------------------------------------------------

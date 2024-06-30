@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MODELCANVAS_H
+#define MODELCANVAS_H
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -38,142 +39,147 @@ class ModelViewer;
 class ModelCanvas;
 
 // 100 fps?
-constexpr int TIME_STEP = 10; // 10 millisecs between each frame
+const int TIME_STEP = 10; // 10 millisecs between each frame
 
-struct SceneState
-{
-	glm::vec3 pos; // Model Position
-	glm::vec3 rot; // Model Rotation
 
-	float fov; // OpenGL Field of View
+struct SceneState {
+  glm::vec3 pos;  // Model Position
+  glm::vec3 rot;  // Model Rotation
+
+  float fov;  // OpenGL Field of View
 };
 
-class ModelCanvas :
+
+class ModelCanvas:
 #ifdef _WINDOWS
-	public wxWindow
+    public wxWindow
 #else
     public wxGLCanvas
 #endif
 {
-	DECLARE_CLASS(ModelCanvas)
-	DECLARE_EVENT_TABLE()
+  DECLARE_CLASS(ModelCanvas)
+  DECLARE_EVENT_TABLE()
 
 public:
-	ModelCanvas(wxWindow* parent, VideoCaps* cap = nullptr);
-	~ModelCanvas() override;
+  ModelCanvas(wxWindow *parent, VideoCaps *cap = nullptr);
+  ~ModelCanvas();
 
-	// GUI Control Panels
-	AnimControl* animControl;
-	GifExporter* gifExporter;
+  // GUI Control Panels
+  AnimControl *animControl;
+  GifExporter *gifExporter;
 
-	RenderTexture* rt;
+  RenderTexture *rt;
 
-	// Event Handlers
-	void OnPaint(wxPaintEvent& WXUNUSED(event));
-	void Render(wxPaintEvent& WXUNUSED(event));
-	void OnSize(wxSizeEvent& event);
-	void OnMouse(wxMouseEvent& event);
-	void OnKey(wxKeyEvent& event);
-	void OnCamMenu(wxCommandEvent& event);
+  // Event Handlers
+  void OnPaint(wxPaintEvent& WXUNUSED(event));
+  void Render(wxPaintEvent& WXUNUSED(event));
+  void OnSize(wxSizeEvent& event);
+  void OnMouse(wxMouseEvent& event);
+  void OnKey(wxKeyEvent &event);
+  void OnCamMenu(wxCommandEvent &event);
 
-	//void OnIdle(wxIdleEvent& event);
-	void OnEraseBackground(wxEraseEvent& event);
-	void OnTimer(wxTimerEvent& event);
-	void tick();
-	wxTimer timer;
+  //void OnIdle(wxIdleEvent& event);
+  void OnEraseBackground(wxEraseEvent& event);
+  void OnTimer(wxTimerEvent& event);
+  void tick();
+  wxTimer timer;
 
-	// OGL related functions
-	void InitGL();
-	void InitView();
-	void InitShaders();
-	void UninitShaders();
+  // OGL related functions
+  void InitGL();
+  void InitView();
+  void InitShaders();
+  void UninitShaders();
 
-	// Main render routines which call the sub routines
-	void RenderToTexture();
-	void RenderModel();
-	void RenderWMO();
-	void RenderADT();
-	void RenderToBuffer();
-	void RenderWMOToBuffer();
-	void RenderLight(Light* l);
+  // Main render routines which call the sub routines
+  void RenderToTexture();
+  void RenderModel();
+  void RenderWMO();
+  void RenderADT();
+  void RenderToBuffer();
+  void RenderWMOToBuffer();
+  void RenderLight(Light *l);
 
-	// Render sub routines
-	void RenderSkybox();
-	void RenderObjects();
-	void RenderBackground();
-	void RenderGrid();
-	//void GenerateShadowMap();
+  // Render sub routines
+  void RenderSkybox();
+  void RenderObjects();
+  void RenderBackground();
+  void RenderGrid();
+  //void GenerateShadowMap();
 
-	void SaveSceneState(int id);
-	void LoadSceneState(int id);
+  void SaveSceneState(int id);
+  void LoadSceneState(int id);
 
-	void SetCurrent();
-	void SwapBuffers();
+  void SetCurrent();
+  void SwapBuffers();
 
-	void setModel(WoWModel* m, bool keepPrevious = false);
-	const WoWModel* model() const { return model_; }
+  void setModel(WoWModel * m, bool keepPrevious = false);
+  WoWModel const * model() const { return model_; }
 
-	// view:
-	glm::vec3 vRot0;
-	glm::vec3 vPos0;
-	wxCoord mx, my;
+  // view:
+  glm::vec3 vRot0;
+  glm::vec3 vPos0;
+  wxCoord mx, my;
 
-	void CheckMovement(); // move the character
+  void CheckMovement();  // move the character
+  
+  Attachment* LoadModel(GameFile *);
 
-	Attachment* LoadModel(GameFile*);
+  void LoadWMO(wxString fn);
+  void LoadADT(wxString fn);
+  //void TogglePause();
+  
+  // Various toggles
+  bool init;
+  bool initShaders;
+  bool drawLightDir, drawBackground, drawSky, drawGrid, drawAVIBackground;
+  bool useCamera; //, useLights;
 
-	void LoadWMO(wxString fn);
-	void LoadADT(wxString fn);
-	//void TogglePause();
+  int lightType;  // MODEL / AMBIENCE / DYNAMIC
+  int ignoreMouse;
 
-	// Various toggles
-	bool init;
-	bool initShaders;
-	bool drawLightDir, drawBackground, drawSky, drawGrid, drawAVIBackground;
-	bool useCamera; //, useLights;
+  // Models / Attachments
+  WoWModel *skyModel;
+  WMO *wmo;
+  MapTile *adt;
 
-	int lightType; // MODEL / AMBIENCE / DYNAMIC
-	int ignoreMouse;
+  Attachment *root;
+  Attachment *sky;
 
-	// Models / Attachments
-	WoWModel* skyModel;
-	WMO* wmo;
-	MapTile* adt;
+  // Attachment related functions
+  void clearAttachments();
+  //int addAttachment(const char *model, Attachment *parent, int id, int slot);
+  //void deleteSlot(int slot);
 
-	Attachment* root;
-	Attachment* sky;
+  // Background colour
+  glm::vec3 vecBGColor;
 
-	// Attachment related functions
-	void clearAttachments();
-	//int addAttachment(const char *model, Attachment *parent, int id, int slot);
-	//void deleteSlot(int slot);
-
-	// Background colour
-	glm::vec3 vecBGColor;
-
-	// Backgroun image stuff
-	GLuint uiBGTexture;
-	void LoadBackground(wxString filename);
+  // Backgroun image stuff
+  GLuint uiBGTexture;
+  void LoadBackground(wxString filename);
 #if defined(_WINDOWS)
-	CAVIGenerator cAvi;
+  CAVIGenerator cAvi;
 #endif
 
-	void toggleOpenGLDebug();
+  void toggleOpenGLDebug();
 
 private:
-	void displayDebugInfos() const;
+  void displayDebugInfos() const;
 
-	float time;
-	DWORD lastTime;
-	//DWORD pauseTime;
-	SceneState sceneState[4]; // 4 scene states for F1-F4
+  float time;
+  DWORD lastTime;
+  //DWORD pauseTime;
+  SceneState sceneState[4]; // 4 scene states for F1-F4
 
-	GLuint fogTex;
+  GLuint fogTex;
 
-	bool fxBlur, fxGlow, fxFog;
+  bool fxBlur, fxGlow, fxFog;
 
-	OrbitCamera camera;
+  OrbitCamera camera;
 
-	WoWModel* model_;
-	bool openGLDebug_;
+  WoWModel * model_;
+  bool openGLDebug_;
 };
+
+
+#endif
+

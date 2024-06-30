@@ -23,8 +23,7 @@
  *   Copyright: 2015 , WoW Model Viewer (http://wowmodelviewer.net)
  */
 
-#ifndef _EXPORTERPLUGIN_H_
-#define _EXPORTERPLUGIN_H_
+#pragma once
 
 // Includes / class Declarations
 //--------------------------------------------------------------------
@@ -116,5 +115,3 @@ class _EXPORTERPLUGIN_API_ ExporterPlugin : public Plugin
 Q_DECLARE_INTERFACE(ExporterPlugin,"wowmodelviewer.exporterplugin/1.0");
 
 #endif
-
-#endif /* _EXPORTERPLUGIN_H_ */

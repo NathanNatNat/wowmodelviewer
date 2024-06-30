@@ -1,6 +1,5 @@
 #include "modelcanvas.h"
 
-#include "ximage.h"
 #include <QImage>
 #include <QImageWriter>
 #include <QImageReader>
@@ -1624,90 +1623,6 @@ void ModelCanvas::CheckMovement()
 
     camera.setLookAt(glm::vec3(look.x + right.x * 0.2, look.y + right.y * 0.2, look.z));
   }
-}
-
-// Our screenshot function which supports both PBO and FBO aswell as traditional older cards, eventually.
-void ModelCanvas::Screenshot(const wxString fn, int x, int y)
-{
-  glPixelStorei(GL_PACK_ALIGNMENT, 1);
-
-  delete rt;
-  rt = 0;
-
-  wxFileName temp(fn, wxPATH_NATIVE);
-  
-  int screenSize[4];
-  glGetIntegerv(GL_VIEWPORT, screenSize);
-
-  // Setup out buffers for offscreen rendering
-  if (video.supportPBO || video.supportFBO)
-  {
-    rt = new (std::nothrow) RenderTexture();
-
-    if(!rt)
-    {
-      LOG_ERROR << "Unable to initialise render texture to make screenshot";
-      return;
-    }
-
-    rt->Init(x, y, video.supportFBO);
-    screenSize[2] = rt->nWidth;
-
-    screenSize[3] = rt->nHeight;
-
-    rt->BeginRender();
-
-    if (model_)
-      RenderToBuffer();
-
-    rt->BindTexture();
-  }
-  else
-  {
-    glGetIntegerv(GL_VIEWPORT, screenSize);
-    glReadBuffer(GL_BACK);
-    if(model_)
-      RenderToBuffer();
-  }
-
-  LOG_INFO << "Saving screenshot in : " << QString::fromWCharArray(fn.c_str());
-
-  if(temp.GetExt() == wxT("tga")) // QT does not support tga writing
-  {
-    // Make the BYTE array, factor of 3 because it's RBG.
-    BYTE* pixels = new BYTE[ 4 * screenSize[2] * screenSize[3]];
-
-    glReadPixels(0, 0, screenSize[2], screenSize[3], GL_BGRA_EXT, GL_UNSIGNED_BYTE, pixels);
-
-    CxImage newImage;
-    // deactivate alpha layr for now, need to rewrite RenderTexture class
-    //newImage.AlphaCreate();  // Create the alpha layer
-    newImage.IncreaseBpp(32);  // set image to 32bit
-    newImage.CreateFromArray(pixels, screenSize[2], screenSize[3], 32, (screenSize[2]*4), false);
-    newImage.Save(fn.fn_str(), CXIMAGE_FORMAT_TGA);
-    newImage.Destroy();
-
-    // free the memory
-    wxDELETEA(pixels);
-  }
-  else // other formats, let Qt do the job
-  {
-    QImage image(screenSize[2],  screenSize[3], QImage::Format_RGB32);
-    glReadPixels(0, 0, screenSize[2], screenSize[3], GL_BGRA_EXT, GL_UNSIGNED_BYTE, image.bits());
-    image.mirrored().save(QString::fromWCharArray(fn.c_str()));
-  }
-  
-  if (rt)
-  {
-    rt->ReleaseTexture();
-    rt->EndRender();
-    rt->Shutdown();
-    delete rt;
-    rt = 0;
-  }
-
-  // Set back to normal
-  glPixelStorei(GL_PACK_ALIGNMENT, 4);
 }
 
 // Save the scene state,  currently this is just position/rotation/field of view

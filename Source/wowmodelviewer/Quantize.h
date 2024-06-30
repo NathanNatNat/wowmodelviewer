@@ -23,12 +23,6 @@
  */
 #pragma once
 
-#ifndef _WINDOWS
-  #include "ximage.h"
-#endif
-
-
-
 class CQuantizer
 {
 	using NODE = struct _NODE
