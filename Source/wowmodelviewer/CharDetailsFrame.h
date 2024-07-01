@@ -5,8 +5,7 @@
  *      Author: Jeromnimo
  */
 
-#ifndef _CHARDETAILSFRAME_H_
-#define _CHARDETAILSFRAME_H_
+#pragma once
 
 #ifndef WX_PRECOMP
 #  include <wx/wx.h>
@@ -24,27 +23,21 @@ class wxStaticText;
 class CharDetailsFrame : public wxWindow, public Observer
 {
 public:
-  CharDetailsFrame(wxWindow* parent);
+	CharDetailsFrame(wxWindow* parent);
 
-  void setModel(WoWModel * model);
+	void setModel(WoWModel* model);
 
-  void onEvent(Event *) override;
-
-protected:
-
+	void onEvent(Event*) override;
 
 private:
-  DECLARE_CLASS(CharDetailsFrame)
-  DECLARE_EVENT_TABLE()
+	DECLARE_CLASS(CharDetailsFrame)
+	DECLARE_EVENT_TABLE()
 
-  wxFlexGridSizer * charCustomizationGS_;
-  wxCheckBox * dhMode_;
+	wxFlexGridSizer* charCustomizationGS_;
+	wxCheckBox* dhMode_;
 
-  void onRandomise(wxCommandEvent &event);
-  void onDHMode(wxCommandEvent &event);
+	void onRandomise(wxCommandEvent& event);
+	void onDHMode(wxCommandEvent& event);
 
-  WoWModel * model_;
+	WoWModel* model_;
 };
-
-
-#endif /* _CHARDETAILSFRAME_H_ */

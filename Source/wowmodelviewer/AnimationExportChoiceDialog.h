@@ -23,86 +23,32 @@
  *   Copyright: 2015, WoW Model Viewer (http://wowmodelviewer.net)
  */
 
-#ifndef _ANIMATIONEXPORTCHOICEDIALOG_H_
-#define _ANIMATIONEXPORTCHOICEDIALOG_H_
+#pragma once
 
-// Includes / class Declarations
-//--------------------------------------------------------------------
-// STL
-
-// Qt
-
-// Externals
-
-// Other libraries
 #ifndef WX_PRECOMP
-    #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 #include <wx/choicdlg.h>
 
 class wxButton;
 
-// Current library
-
-// Namespaces used
-//--------------------------------------------------------------------
-
-// Class Declaration
-//--------------------------------------------------------------------
 class AnimationExportChoiceDialog : public wxMultiChoiceDialog
 {
-  public :
-    // Constants / Enums
+public :
+	AnimationExportChoiceDialog(wxWindow* parent, const wxString& message, const wxString& caption,
+	                            const wxArrayString& choices);
 
-    // Constructors
-    AnimationExportChoiceDialog(wxWindow *parent, const wxString &message, const wxString &caption, const wxArrayString &choices);
+	~AnimationExportChoiceDialog() override
+	{
+	}
 
-    // Destructors
-    ~AnimationExportChoiceDialog() {}
+private :
+	void updateButtons(wxCommandEvent& event);
+	void OnSelectAll(wxCommandEvent& event);
+	void OnUnselectAll(wxCommandEvent& event);
 
-    // Methods
+	wxButton* m_selectall;
+	wxButton* m_unselectall;
 
-    // Members
-
-  protected :
-    // Constants / Enums
-
-    // Constructors
-
-    // Destructors
-
-    // Methods
-
-    // Members
-
-
-  private :
-    // Constants / Enums
-
-    // Constructors
-
-    // Destructors
-
-    // Methods
-    void updateButtons(wxCommandEvent& event);
-    void OnSelectAll(wxCommandEvent &event);
-    void OnUnselectAll(wxCommandEvent &event);
-
-
-    // Members
-    wxButton * m_selectall;
-    wxButton * m_unselectall;
-
-    DECLARE_EVENT_TABLE();
-
-    // friend class declarations
+	DECLARE_EVENT_TABLE();
 };
-
-// static members definition
-#ifdef _ANIMATIONEXPORTCHOICEDIALOG_CPP_
-
-#endif
-
-
-
-#endif /* _ANIMATIONEXPORTCHOICEDIALOG_H_ */

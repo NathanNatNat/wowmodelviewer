@@ -1,5 +1,4 @@
-#ifndef USERSKINS_H
-#define USERSKINS_H
+#pragma once
 
 #include <map>
 
@@ -7,27 +6,27 @@
 
 class UserSkins
 {
-  typedef std::map<wxString, TextureSet> TexSetMap;
-  TexSetMap skins;
-  bool loaded;
+	using TexSetMap = std::map<wxString, TextureSet>;
+	TexSetMap skins;
+	bool loaded;
+
 public:
-  UserSkins()
-  : loaded(false)
-  { }
-  UserSkins(const wxString& filename);
+	UserSkins() : loaded(false)
+	{
+	}
 
-  // Get the user defined skin for a model
-  // The model must be all lowercase with an ".mdx" extension
-  // If false is returned, set is not changed at all, otherwise
-  // the user defined skins are added to it.
-  bool AddUserSkins(const wxString& model, TextureSet& set);
+	UserSkins(const wxString& filename);
 
-  bool Loaded() const
-  {
-    return loaded;
-  }
+	// Get the user defined skin for a model
+	// The model must be all lowercase with an ".mdx" extension
+	// If false is returned, set is not changed at all, otherwise
+	// the user defined skins are added to it.
+	bool AddUserSkins(const wxString& model, TextureSet& set);
 
-  void LoadFile(const wxString& filename);
+	bool Loaded() const
+	{
+		return loaded;
+	}
+
+	void LoadFile(const wxString& filename);
 };
-
-#endif //USERSKINS_H

@@ -1,8 +1,7 @@
-#ifndef SHADERS_H
-#define SHADERS_H
+#pragma once
 
 #if defined _WINDOWS
-#include "GL\glew.h"
+#include "GL/glew.h"
 #endif
 
 // Shut up MSVC compiler "inconsistent dll linkage" warning
@@ -21,33 +20,39 @@ extern PFNGLPROGRAMLOCALPARAMETER4FARBPROC glProgramLocalParameter4fARB;
 void OldinitShaders();
 void OldreloadShaders();
 
-class Shader {
-  GLenum target;
-  GLuint id;
+class Shader
+{
+	GLenum target;
+	GLuint id;
+
 public:
-  bool ok;
+	bool ok;
 
-  Shader(GLenum target, const char *program, bool fromFile = false);
-  virtual ~Shader();
+	Shader(GLenum target, const char* program, bool fromFile = false);
+	virtual ~Shader();
 
-  virtual void bind();
-  virtual void unbind();
+	virtual void bind();
+	virtual void unbind();
 };
 
-class ShaderPair {
-  Shader *vertex;
-  Shader *fragment;
+class ShaderPair
+{
+	Shader* vertex;
+	Shader* fragment;
+
 public:
+	ShaderPair(): vertex(nullptr), fragment(nullptr)
+	{
+	}
 
-  ShaderPair():vertex(0),fragment(0) {}
-  ShaderPair(Shader *vs, Shader *ps):vertex(vs), fragment(ps) {}
-  ShaderPair(const char *vprog, const char *fprog, bool fromFile = false);
+	ShaderPair(Shader* vs, Shader* ps): vertex(vs), fragment(ps)
+	{
+	}
 
-  void bind();
-  void unbind();
+	ShaderPair(const char* vprog, const char* fprog, bool fromFile = false);
+
+	void bind();
+	void unbind();
 };
 
 extern ShaderPair *terrainShaders[4], *wmoShader, *waterShaders[1];
-
-
-#endif

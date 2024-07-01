@@ -5,22 +5,16 @@
  *      Author: Jeromnimo
  */
 
-#ifndef _LOGSTACKWALKER_H_
-#define _LOGSTACKWALKER_H_
+#pragma once
 
 #ifndef WX_PRECOMP
-  #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 
 #include <wx/stackwalk.h>
 
 class LogStackWalker : public wxStackWalker
 {
-  protected:
-    void OnStackFrame(const wxStackFrame& frame);
+protected:
+	void OnStackFrame(const wxStackFrame& frame) override;
 };
-
-
-
-
-#endif /* _LOGSTACKWALKER_H_ */

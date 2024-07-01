@@ -5,11 +5,10 @@
 *      Author: Jeromnimo
 */
 
-#ifndef _CHARDETAILSCUSTOMIZATIONCHOICE_H_
-#define _CHARDETAILSCUSTOMIZATIONCHOICE_H_
+#pragma once
 
 #ifndef WX_PRECOMP
-  #include <wx/wx.h>
+#include <wx/wx.h>
 #endif
 
 #include <wx/choice.h>
@@ -21,29 +20,26 @@
 
 class CharDetailsCustomizationChoice : public wxWindow, public Observer
 {
-  public:
-    CharDetailsCustomizationChoice(wxWindow* parent, CharDetails & details, uint chrCustomizationChoiceID);
+public:
+	CharDetailsCustomizationChoice(wxWindow* parent, CharDetails& details, uint chrCustomizationChoiceID);
 
-    void onEvent(Event *) override;
+	void onEvent(Event*) override;
 
-  private:
-    DECLARE_CLASS(CharDetailsCustomizationChoice)
-    DECLARE_EVENT_TABLE()
+private:
+	DECLARE_CLASS(CharDetailsCustomizationChoice)
+	DECLARE_EVENT_TABLE()
 
-    void onChoice(wxCommandEvent& event);
-   
+	void onChoice(wxCommandEvent& event);
 
-    void refresh();
-    void buildList();
 
-    uint ID_;
-    std::vector<uint> values_;
+	void refresh();
+	void buildList();
 
-    CharDetails & details_;
-    
+	uint ID_;
+	std::vector<uint> values_;
 
-    wxChoice * choice_;
+	CharDetails& details_;
+
+
+	wxChoice* choice_;
 };
-
-
-#endif // _CHARDETAILSCUSTOMIZATIONCHOICE_H_
